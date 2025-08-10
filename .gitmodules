@@ -1,0 +1,9 @@
+[submodule "kitty"]
+	path = kitty
+	url = https://github.com/chawiwi/kitty
+[submodule "nvim"]
+	path = nvim
+	url = https://github.com/chawiwi/nvim
+[submodule "tmux"]
+	path = tmux
+	url = https://github.com/chawiwi/tmux
