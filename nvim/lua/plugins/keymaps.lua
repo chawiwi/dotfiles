@@ -7,6 +7,15 @@ vim.keymap.set("i", "kj", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal insert" })
 vim.keymap.set("t", "kj", "<C-\\><C-n>", { desc = "Exit terminal insert" })
 
+-- Toggle for autoformat on save for buffer(FormatDisable!) or globally (FormatDisable)
+vim.keymap.set("n", "<leader>tf", function()
+	vim.b.autoformat = (vim.b.autoformat == false) and true or false
+	print("Autoformat (buffer): " .. (vim.b.autoformat == false and "OFF" or "ON"))
+end, { desc = "[T]oggle format-on-save (buffer)" })
+
+---------------------------------------------------------------------------
+-- plugin keymaps
+---------------------------------------------------------------------------
 return {
 	---------------------------------------------------------------------------
 	-- Snacks keymaps (merged with snacks.lua)
@@ -755,6 +764,22 @@ return {
 				}, -- change if <leader>n is used elsewhere
 			}
 		end,
+	},
+	---------------------------------------------------------------------------
+	-- Conform keymaps
+	---------------------------------------------------------------------------
+	{
+		"stevearc/conform.nvim",
+		keys = {
+			{
+				"<leader>fw",
+				function()
+					require("conform").format({ async = true, lsp_format = "fallback" })
+				end,
+				mode = "",
+				desc = "[F]ormat buffer",
+			},
+		},
 	},
 	---------------------------------------------------------------------------
 	-- lazygit keymaps
