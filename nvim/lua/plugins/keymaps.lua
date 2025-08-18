@@ -434,11 +434,11 @@ return {
 					desc = "Rename File",
 				},
 				{
-					"<leader>gB",
+					"<leader>gw",
 					function()
 						Snacks.gitbrowse()
 					end,
-					desc = "Git Browse",
+					desc = "Git WebBrowse",
 					mode = { "n", "v" },
 				},
 				{
@@ -652,6 +652,18 @@ return {
 				{ "<leader>tD", gitsigns.preview_hunk_inline, desc = "[T]oggle git show [D]eleted" },
 			}
 		end,
+	},
+	---------------------------------------------------------------------------
+	-- diffview keymaps
+	---------------------------------------------------------------------------
+	{
+		"sindrets/diffview.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		keys = {
+			{ "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Diff [v]iew" },
+			{ "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File [h]istory" },
+			{ "<leader>gB", "<cmd>DiffviewOpen origin/HEAD...HEAD --imply-local<cr>", desc = "[B]ranch changes" },
+		},
 	},
 	---------------------------------------------------------------------------
 	-- harpoon keymaps
