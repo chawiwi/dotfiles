@@ -7,6 +7,12 @@ vim.keymap.set("i", "kj", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal insert" })
 vim.keymap.set("t", "kj", "<C-\\><C-n>", { desc = "Exit terminal insert" })
 
+-- Resizing windows
+vim.keymap.set("n", "<C-Up>", ":resize -2<CR>", { desc = "Resize Up" })
+vim.keymap.set("n", "<C-Down>", ":resize +2<CR>", { desc = "Resize Up" })
+vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Resize Up" })
+vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Resize Up" })
+
 -- Toggle for autoformat on save for buffer(FormatDisable!) or globally (FormatDisable)
 vim.keymap.set("n", "<leader>tf", function()
 	vim.b.autoformat = (vim.b.autoformat == false) and true or false
