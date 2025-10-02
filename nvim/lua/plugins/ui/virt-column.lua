@@ -16,8 +16,8 @@ return {
 		-- char = "∷",
 		-- char = "║",
 		-- char = "⋮",
-		-- char = "",
-		char = "󰮾",
-		virtcolumn = "80",
+		char = "",
+		-- char = "󰮾",
+		virtcolumn = "88",
 	},
 }
