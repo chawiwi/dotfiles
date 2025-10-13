@@ -23,7 +23,7 @@ return {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 
 			-- Useful status updates for LSP.
-			{ "j-hui/fidget.nvim",    opts = {} },
+			{ "j-hui/fidget.nvim", opts = {} },
 
 			-- Allows extra capabilities provided by blink.cmp
 			"saghen/blink.cmp",
@@ -232,6 +232,7 @@ return {
 				"shfmt",
 				"bash-debug-adapter",
 				"debugpy",
+				"copilot-language-server",
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -272,7 +273,7 @@ return {
 			-- Use Conform for the formatters you previously wired via none-ls
 			formatters_by_ft = {
 				lua = { "stylua" },
-				python = { "ruff_format" },
+				python = { "ruff" },
 				sh = { "shfmt" },
 				bash = { "shfmt" },
 				json = { "prettier" },
