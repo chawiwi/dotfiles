@@ -218,6 +218,8 @@ exec --no-startup-id feh --bg-scale /home/kaisawa/Pictures/nordic-wallpapers/wal
 #for_window [class="(?i)exiled-exchange.*"] floating enable, focus, sticky enable, border none, move position center
 # or by title if class varies:
 for_window [title="(?i).*exiled.*exchange.*"] floating enable, focus, sticky enable, border none, move position center
+for_window [class="cs2"] floating enable
+for_window [class="cs2"] fullscreen enable
 
 set $rosewater #f5e0dc
 set $flamingo #f2cdcd

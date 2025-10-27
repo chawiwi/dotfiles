@@ -14,16 +14,55 @@ return {
 	},
 	keys = {
 		{
-			"<leader><tab>",
+			"<leader>na",
 			function()
 				-- if there is a next edit, jump to it, otherwise apply it if any
-				if not require("sidekick").nes_jump_or_apply(
-) then
+				if not require("sidekick").nes_jump_or_apply() then
 					return "<Tab>" -- fallback to normal tab
 				end
 			end,
 			expr = true,
 			desc = "Goto/Apply Next Edit Suggestion",
+		},
+		{
+			"<leader>nc",
+			function()
+				require("sidekick.nes").clear()
+			end,
+			expr = true,
+			desc = "Clear Next Edit Suggestion",
+		},
+		{
+			"<leader>nd",
+			function()
+				require("sidekick.nes").disable()
+			end,
+			expr = true,
+			desc = "disable Next Edit Suggestion",
+		},
+		{
+			"<leader>ne",
+			function()
+				require("sidekick.nes").enable()
+			end,
+			expr = true,
+			desc = "enable Next Edit Suggestion",
+		},
+		{
+			"<leader>nt",
+			function()
+				require("sidekick.nes").toggle()
+			end,
+			expr = true,
+			desc = "toggle Next Edit Suggestion",
+		},
+		{
+			"<leader>nu",
+			function()
+				require("sidekick.nes").update()
+			end,
+			expr = true,
+			desc = "Update Next Edit Suggestion",
 		},
 		{
 			"<c-.>",
@@ -111,4 +150,3 @@ return {
 		},
 	},
 }
-
