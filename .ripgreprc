@@ -1,0 +1,7 @@
+--hidden
+--follow
+--glob=!.git
+--smart-case
+--max-columns=200
+--max-columns-preview
+--colors=match:style:bold
