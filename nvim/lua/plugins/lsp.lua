@@ -24,9 +24,6 @@ return {
 
 			-- Useful status updates for LSP.
 			{ "j-hui/fidget.nvim", opts = {} },
-
-			-- Allows extra capabilities provided by blink.cmp
-			"saghen/blink.cmp",
 		},
 		config = function()
 			-- Brief aside: **What is LSP?**
@@ -322,6 +319,15 @@ return {
 		--- @module 'blink.cmp'
 		--- @type blink.cmp.Config
 		opts = {
+			-- Enable blink inside DAP buffers (REPL & panes are 'prompt' buftype)
+			enabled = function()
+				local bt = vim.bo.buftype
+				if bt ~= "prompt" then
+					return true
+				end
+				local ft = vim.bo.filetype
+				return ft == "dap-repl" or ft == "dapui_watches" or ft == "dapui_hover" or ft == "dap-view" -- if you open dap-view panes with prompt buffers
+			end,
 			keymap = {
 				-- 'default' (recommended) for mappings similar to built-in completions
 				--   <c-y> to accept ([y]es) the completion.
@@ -363,9 +369,19 @@ return {
 			},
 
 			sources = {
-				default = { "lsp", "path", "snippets", "lazydev" },
+				default = { "lsp", "path", "snippets", "lazydev", "dap" },
 				providers = {
 					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
+					dap = {
+						name = "dap", -- nvim-cmp source name
+						module = "blink.compat.source", -- the shim
+						async = true,
+						enabled = function()
+							-- only turn on inside DAP buffers
+							local ok, cmp_dap = pcall(require, "cmp_dap")
+							return ok and cmp_dap.is_dap_buffer()
+						end,
+					},
 				},
 			},
 

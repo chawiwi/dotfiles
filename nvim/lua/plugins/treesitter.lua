@@ -5,6 +5,15 @@ return {
 		lazy = false,
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
+		-- adding this due to treesitter configuring first
+		dependencies = {
+			{
+				"LiadOz/nvim-dap-repl-highlights",
+				config = function()
+					require("nvim-dap-repl-highlights").setup()
+				end,
+			},
+		},
 		opts = {
 			ensure_installed = {
 				"bash",
@@ -25,6 +34,7 @@ return {
 				"vim",
 				"vimdoc",
 				"yaml",
+				"dap_repl", --debug REPL
 			},
 			auto_install = true,
 			highlight = { enable = true },
@@ -63,8 +73,11 @@ return {
 			vim.treesitter.language.register("bash", "shell")
 			vim.treesitter.language.register("bash", "zsh")
 			-- add more if you use them, e.g.:
-			-- vim.treesitter.language.register("javascript", "node")
-			-- vim.treesitter.language.register("typescript", "ts")
+			vim.treesitter.language.register("javascript", "node")
+			vim.treesitter.language.register("typescript", "ts")
+			vim.treesitter.language.register("python", "py")
+			vim.treesitter.language.register("powershell", "ps1")
+			vim.treesitter.language.register("json", "jsonc")
 		end,
 	},
 }

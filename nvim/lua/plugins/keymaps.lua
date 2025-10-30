@@ -530,7 +530,8 @@ return {
 		"mfussenegger/nvim-dap",
 		keys = function()
 			local dap = require("dap")
-			local dapui = require("dapui")
+			local dapview = require("dap-view")
+			local widgets = require("dap.ui.widgets")
 
 			return {
 				{
@@ -562,6 +563,20 @@ return {
 					desc = "Debug: Step Out",
 				},
 				{
+					"<F4>",
+					function()
+						dap.run_to_cursor()
+					end,
+					desc = "Debug: Run to Cursor",
+				},
+				{
+					"<F8>",
+					function()
+						dap.reverse_continue()
+					end,
+					desc = "Debug: Reverse Continue",
+				},
+				{
 					"<leader>b",
 					function()
 						dap.toggle_breakpoint()
@@ -578,10 +593,86 @@ return {
 				{
 					"<F7>",
 					function()
-						dapui.toggle()
+						dapview.toggle()
 					end,
-					desc = "Debug: Toggle UI",
+					desc = "Debug: Toggle UI (dap-view)",
 				},
+				{
+					"<F6>",
+					function()
+						if not pcall(dap.restart) then
+							dap.terminate()
+							vim.defer_fn(function()
+								dap.run_last()
+							end, 200)
+						end
+					end,
+					desc = "Debug: Restart",
+				},
+				-- Debug attach helpers
+				{ "<leader>ds", ":RDbgTunnelStart<CR>", desc = "Debug: Start SSH tunnel" },
+				{ "<leader>dx", ":RDbgTunnelStop<CR>", desc = "Debug: Stop SSH tunnel" },
+				{ "<leader>da", ":DapAttachRemoteRoot<CR>", desc = "Debug: Attach (prompt host/root)" },
+				-- NEW: Add expression to Watches (cursor word or visual selection)
+				{
+					"<leader>dw",
+					function()
+						dapview.add_expr()
+					end,
+					desc = "Debug: Watch add (cursor/visual)",
+				},
+				{
+					"<leader>dw",
+					function()
+						dapview.add_expr()
+					end,
+					mode = "v",
+					desc = "Debug: Watch add (selection)",
+				},
+
+				-- Optional: prompt to add explicit watch
+				{
+					"<leader>dp",
+					function()
+						local expr = vim.fn.input("Watch expression: ")
+						if expr ~= "" then
+							dapview.add_expr(expr, true)
+						end
+					end,
+					desc = "Debug: Watch add (prompt)",
+				},
+
+				-- NEW: Evaluate expression (hover-like; uses nvim-dap widgets)
+				-- Normal mode → word under cursor; Visual mode → selection
+				{
+					"<leader>de",
+					function()
+						widgets.hover()
+					end,
+					desc = "Debug: Evaluate (hover)",
+				},
+				{
+					"<leader>de",
+					function()
+						widgets.hover()
+					end,
+					mode = "v",
+					desc = "Debug: Evaluate (hover selection)",
+				},
+			}
+		end,
+	},
+	---------------------------------------------------------------------------
+	-- sshfs keymaps
+	---------------------------------------------------------------------------
+	{
+		"uhs-robert/sshfs.nvim",
+		keys = function()
+			return {
+				{ "<leader>rm", ":SSHConnect<CR>", desc = "Remote: Mount (Snacks picker)" }, -- mounts + picks host
+				{ "<leader>ro", ":SSHBrowse<CR>", desc = "Remote: Open picker in mount" }, -- auto uses Snacks if present
+				{ "<leader>rg", ":SSHGrep<CR>", desc = "Remote: Grep in mount" }, -- Snacks grep if present
+				{ "<leader>ru", ":SSHDisconnect<CR>", desc = "Remote: Unmount" },
 			}
 		end,
 	},
