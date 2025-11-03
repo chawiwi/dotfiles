@@ -369,17 +369,30 @@ return {
 			},
 
 			sources = {
-				default = { "lsp", "path", "snippets", "lazydev", "dap" },
+				default = { "lsp", "path", "snippets", "lazydev" },
+
+				-- Only offer dap in DAP buffers
+				per_filetype = {
+					["dap-repl"] = { "dap" },
+					["dapui_watches"] = { "dap" },
+					["dapui_hover"] = { "dap" },
+					["dap-view"] = { "dap" },
+				},
+
 				providers = {
 					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
+					-- Bridging nvim-cmp source through blink.compat
 					dap = {
 						name = "dap", -- nvim-cmp source name
-						module = "blink.compat.source", -- the shim
+						module = "blink.compat.source", -- shim from blink.compat
 						async = true,
 						enabled = function()
-							-- only turn on inside DAP buffers
-							local ok, cmp_dap = pcall(require, "cmp_dap")
-							return ok and cmp_dap.is_dap_buffer()
+							local ok_cmp, cmp_dap = pcall(require, "cmp_dap")
+							if not ok_cmp or not cmp_dap.is_dap_buffer() then
+								return false
+							end
+							local ok_dap, dap = pcall(require, "dap")
+							return ok_dap and dap.session() ~= nil
 						end,
 					},
 				},
