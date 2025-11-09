@@ -65,4 +65,12 @@ return {
 			require("nvim-dap-virtual-text").setup()
 		end,
 	},
+	{
+		--pydoc browser
+		"girishji/pythondoc.vim",
+	},
+	{
+		--docstring gen
+		"kkoomen/vim-doge",
+	},
 }

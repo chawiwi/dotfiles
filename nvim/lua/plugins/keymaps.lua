@@ -19,6 +19,9 @@ vim.keymap.set("n", "<leader>tf", function()
 	print("Autoformat (buffer): " .. (vim.b.autoformat == false and "OFF" or "ON"))
 end, { desc = "[T]oggle format-on-save (buffer)" })
 
+-- Doge docstring gen
+vim.keymap.set("n", "<Leader>dd", "<Plug>(doge-generate)")
+
 ---------------------------------------------------------------------------
 -- plugin keymaps
 ---------------------------------------------------------------------------
