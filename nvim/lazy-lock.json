@@ -47,7 +47,7 @@
   "pythondoc.vim": { "branch": "main", "commit": "de8cbbebe6784d12749787b4aee79e6aa6d9426d" },
   "quarto-nvim": { "branch": "main", "commit": "0e9491509b38efbd83d3f41dbfacc7fc4bd40191" },
   "sidekick.nvim": { "branch": "main", "commit": "c2bdf8cfcd87a6be5f8b84322c1b5052e78e302e" },
-  "snacks.nvim": { "branch": "main", "commit": "8ca098ca360b45a361c475be6ea7dd81e438cc35" },
+  "snacks.nvim": { "branch": "main", "commit": "dec29f55666f8f4545835636077a86b150faf630" },
   "sshfs.nvim": { "branch": "main", "commit": "9d34cb94e7e1b7eea5643522022394e5a4513760" },
   "stay-centered.nvim": { "branch": "main", "commit": "e1a63ccaf2584e97c0ef8e64f9654c9a80d983f6" },
   "store.nvim": { "branch": "main", "commit": "df430716b095719f7221f2fb50be696879ca7c34" },
