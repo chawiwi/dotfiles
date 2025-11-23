@@ -109,7 +109,7 @@ else
 fi
 
 # Defining deault editor as nvim
-export EDITOR=nvim
+export EDITOR="nvim"
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -269,10 +269,10 @@ fi
 # Prefer 'bat' for previews; fall back to 'batcat', then sed/awk
 if command -v bat >/dev/null 2>&1; then
   _PREVIEW_FILE='bat --style=numbers --paging=never --color=always {}'
-  _PREVIEW_RG='bat --style=numbers --paging=never --color=always {1} --line-range {2}:+'
+  _PREVIEW_RG='bat --style=numbers --paging=never --color=always {1} --line-range {2}'
 elif command -v batcat >/dev/null 2>&1; then
   _PREVIEW_FILE='batcat --style=numbers --paging=never --color=always {}'
-  _PREVIEW_RG='batcat --style=numbers --paging=never --color=always {1} --line-range {2}:+'
+  _PREVIEW_RG='batcat --style=numbers --paging=never --color=always {1} --line-range {2}'
 else
   _PREVIEW_FILE="sed -n '1,200p' {}"
   # Show 200 lines starting from the match line for rg previews
@@ -392,3 +392,15 @@ export FD_OPTIONS="${FD_OPTIONS:-}"
 # printf ".git\nnode_modules\ndist\nbuild\n.venv\n" >> ~/.fdignore
 # =============================================================================
 # checking
+
+export PATH="$HOME/.cargo/env:$PATH"
+
+# yazi shell wrapper for changing cwd to directory navigated to in yazi. Q to quit yazi without changing
+function y() {
+alias y='yazi'
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
