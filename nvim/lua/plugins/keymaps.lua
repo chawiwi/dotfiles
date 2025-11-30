@@ -937,74 +937,48 @@ return {
 		},
 	},
 
-	-- Molten keymaps (only for notebook-ish files)
+	-- Jupynium keymaps (buffer-level notebook workflows)
 	{
-		"benlubas/molten-nvim",
-		ft = { "quarto", "markdown", "qmd", "python", "r", "julia" },
+		"kiyoon/jupynium.nvim",
+		ft = { "python", "markdown" },
 		keys = {
-			{ "<localleader>me", ":MoltenEvaluateOperator<CR>", desc = "Molten: [e]val operator", mode = "n" },
-			{ "<localleader>mo", ":noautocmd MoltenEnterOutput<CR>", desc = "Molten: [o]pen output", mode = "n" },
-			{ "<localleader>mh", ":MoltenHideOutput<CR>", desc = "Molten: [h]ide output", mode = "n" },
-			{ "<localleader>mr", ":MoltenReevaluateCell<CR>", desc = "Molten: [r]e-eval cell", mode = "n" },
-			{ "<localleader>me", ":<C-u>MoltenEvaluateVisual<CR>gv", desc = "[M]olten: [e]val visual", mode = "v" },
-			{ "<localleader>md", ":MoltenDelete<CR>", desc = "Molten: [d]elete cell", mode = "n" },
-			{ "<localleader>mx", ":MoltenOpenInBrowser<CR>", desc = "Molten: open in browser", mode = "n" },
+			{ "<localleader>js", "<cmd>JupyniumStartAndAttachToServer<CR>", desc = "Jupynium: start & attach" },
+			{ "<localleader>ja", "<cmd>JupyniumAttachToServer<CR>", desc = "Jupynium: attach" },
+			{ "<localleader>jS", "<cmd>JupyniumStartSync<CR>", desc = "Jupynium: start sync" },
+			{ "<localleader>jX", "<cmd>JupyniumStopSync<CR>", desc = "Jupynium: stop sync" },
+			{
+				"<localleader>je",
+				"<cmd>JupyniumExecuteSelectedCells<CR>",
+				mode = { "n", "v" },
+				desc = "Jupynium: exec cells",
+			},
+			{
+				"<localleader>jQ",
+				"<cmd>JupyniumStopJupyterServer<CR>",
+				desc = "Jupynium: stop Jupyter server",
+			},
+			{ "<localleader>jn", "<cmd>JupyniumScrollToCell<CR>", desc = "Jupynium: jump to cell" },
+			{ "<localleader>jK", "<cmd>JupyniumKernelHover<CR>", desc = "Jupynium: kernel hover" },
+			{ "<localleader>jo", "<cmd>JupyniumClearSelectedCellsOutputs<CR>", desc = "Jupynium: clear cell output" },
+			{
+				"<localleader>jc",
+				function()
+					local row = vim.api.nvim_win_get_cursor(0)[1]
+					vim.api.nvim_buf_set_lines(0, row, row, false, { "# %%", "" })
+					vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
+				end,
+				desc = "Jupynium: add new cell below",
+			},
 		},
 	},
 
-	-- Quarto runner keymaps (lazy-require functions on press)
+	-- Notebook style keymaps
 	{
-		"quarto-dev/quarto-nvim",
-		ft = { "quarto", "markdown", "qmd" },
+		"stellarjmr/notebook_style.nvim",
+		ft = { "python", "markdown" },
 		keys = {
-			{
-				"<localleader>rc",
-				function()
-					require("quarto.runner").run_cell()
-				end,
-				desc = "Quarto: run cell",
-				mode = "n",
-			},
-			{
-				"<localleader>ra",
-				function()
-					require("quarto.runner").run_above()
-				end,
-				desc = "Quarto: run above",
-				mode = "n",
-			},
-			{
-				"<localleader>rA",
-				function()
-					require("quarto.runner").run_all()
-				end,
-				desc = "Quarto: run all",
-				mode = "n",
-			},
-			{
-				"<localleader>rl",
-				function()
-					require("quarto.runner").run_line()
-				end,
-				desc = "Quarto: run line",
-				mode = "n",
-			},
-			{
-				"<localleader>r",
-				function()
-					require("quarto.runner").run_range()
-				end,
-				desc = "Quarto: run visual range",
-				mode = "v",
-			},
-			{
-				"<localleader>RA",
-				function()
-					require("quarto.runner").run_all(true)
-				end,
-				desc = "Quarto: run all (all langs)",
-				mode = "n",
-			},
+			{ "<localleader>ns", "<cmd>NotebookStyleToggle<CR>", desc = "Notebook style: toggle" },
+			{ "<localleader>nr", "<cmd>NotebookStyleToggleRender<CR>", desc = "Notebook style: render" },
 		},
 	},
 }

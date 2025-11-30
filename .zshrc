@@ -404,3 +404,5 @@ alias y='yazi'
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
+
+alias icat="kitten icat"

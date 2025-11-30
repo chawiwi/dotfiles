@@ -369,7 +369,7 @@ return {
 			},
 
 			sources = {
-				default = { "lsp", "path", "snippets", "lazydev" },
+				default = { "lsp", "path", "snippets", "lazydev", "jupynium" },
 
 				-- Only offer dap in DAP buffers
 				per_filetype = {
@@ -381,6 +381,15 @@ return {
 
 				providers = {
 					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
+					jupynium = {
+						name = "jupynium", -- nvim-cmp source name
+						module = "blink.compat.source",
+						async = true,
+						enabled = function()
+							local ft = vim.bo.filetype
+							return ft == "python" or ft == "markdown"
+						end,
+					},
 					-- Bridging nvim-cmp source through blink.compat
 					dap = {
 						name = "dap", -- nvim-cmp source name
