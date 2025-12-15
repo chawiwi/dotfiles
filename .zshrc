@@ -406,3 +406,5 @@ alias y='yazi'
 }
 
 alias icat="kitten icat"
+alias cx="codex"
+alias cxr="codex resume"
