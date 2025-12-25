@@ -19,6 +19,13 @@ vim.keymap.set("n", "<leader>tf", function()
 	print("Autoformat (buffer): " .. (vim.b.autoformat == false and "OFF" or "ON"))
 end, { desc = "[T]oggle format-on-save (buffer)" })
 
+-- Add new python REPL style cell below
+vim.keymap.set("n", "<localleader>nn", function()
+	local row = vim.api.nvim_win_get_cursor(0)[1]
+	vim.api.nvim_buf_set_lines(0, row, row, false, { "# %%", "" })
+	vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
+end, { desc = "Notebook: New cell below" })
+
 -- Doge docstring gen
 vim.keymap.set("n", "<Leader>dd", "<Plug>(doge-generate)")
 
@@ -754,15 +761,14 @@ return {
 		end,
 	},
 	---------------------------------------------------------------------------
-	-- diffview keymaps
+	-- vscode-diff keymaps
 	---------------------------------------------------------------------------
 	{
-		"sindrets/diffview.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
+		"esmuellert/vscode-diff.nvim",
 		keys = {
-			{ "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Diff [v]iew" },
-			{ "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File [h]istory" },
-			{ "<leader>gB", "<cmd>DiffviewOpen origin/HEAD...HEAD --imply-local<cr>", desc = "[B]ranch changes" },
+			{ "<leader>gv", "<cmd>CodeDiff<cr>", desc = "Diff [v]iew" },
+			{ "<leader>gh", "<cmd>CodeDiff file % HEAD<cr>", desc = "File [h]istory (HEAD)" },
+			{ "<leader>gB", "<cmd>CodeDiff origin/HEAD HEAD<cr>", desc = "[B]ranch changes" },
 		},
 	},
 	---------------------------------------------------------------------------
@@ -937,38 +943,28 @@ return {
 		},
 	},
 
-	-- Jupynium keymaps (buffer-level notebook workflows)
+	-- Quench keymaps (buffer-level notebook workflows)
 	{
-		"kiyoon/jupynium.nvim",
-		ft = { "python", "markdown" },
+		"ryan-ressmeyer/quench.nvim",
+		ft = { "python" },
 		keys = {
-			{ "<localleader>js", "<cmd>JupyniumStartAndAttachToServer<CR>", desc = "Jupynium: start & attach" },
-			{ "<localleader>ja", "<cmd>JupyniumAttachToServer<CR>", desc = "Jupynium: attach" },
-			{ "<localleader>jS", "<cmd>JupyniumStartSync<CR>", desc = "Jupynium: start sync" },
-			{ "<localleader>jX", "<cmd>JupyniumStopSync<CR>", desc = "Jupynium: stop sync" },
+			{ "<localleader>qr", "<cmd>QuenchRunCell<CR>", desc = "Quench: run cell" },
+			{ "<localleader>qR", "<cmd>QuenchRunCellAdvance<CR>", desc = "Quench: run cell & advance" },
+			{ "<localleader>ql", "<cmd>QuenchRunLine<CR>", desc = "Quench: run line" },
 			{
-				"<localleader>je",
-				"<cmd>JupyniumExecuteSelectedCells<CR>",
-				mode = { "n", "v" },
-				desc = "Jupynium: exec cells",
+				"<localleader>qs",
+				"<cmd>QuenchRunSelection<CR>",
+				mode = { "v" },
+				desc = "Quench: run selection",
 			},
-			{
-				"<localleader>jQ",
-				"<cmd>JupyniumStopJupyterServer<CR>",
-				desc = "Jupynium: stop Jupyter server",
-			},
-			{ "<localleader>jn", "<cmd>JupyniumScrollToCell<CR>", desc = "Jupynium: jump to cell" },
-			{ "<localleader>jK", "<cmd>JupyniumKernelHover<CR>", desc = "Jupynium: kernel hover" },
-			{ "<localleader>jo", "<cmd>JupyniumClearSelectedCellsOutputs<CR>", desc = "Jupynium: clear cell output" },
-			{
-				"<localleader>jc",
-				function()
-					local row = vim.api.nvim_win_get_cursor(0)[1]
-					vim.api.nvim_buf_set_lines(0, row, row, false, { "# %%", "" })
-					vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
-				end,
-				desc = "Jupynium: add new cell below",
-			},
+			{ "<localleader>qa", "<cmd>QuenchRunAll<CR>", desc = "Quench: run all cells" },
+			{ "<localleader>qA", "<cmd>QuenchRunAbove<CR>", desc = "Quench: run above" },
+			{ "<localleader>qb", "<cmd>QuenchRunBelow<CR>", desc = "Quench: run below" },
+			{ "<localleader>qO", "<cmd>QuenchOpen<CR>", desc = "Quench: open UI" },
+			{ "<localleader>qS", "<cmd>QuenchStatus<CR>", desc = "Quench: status" },
+			{ "<localleader>qi", "<cmd>QuenchInterruptKernel<CR>", desc = "Quench: interrupt kernel" },
+			{ "<localleader>qk", "<cmd>QuenchResetKernel<CR>", desc = "Quench: reset kernel" },
+			{ "<localleader>qx", "<cmd>QuenchStop<CR>", desc = "Quench: stop all" },
 		},
 	},
 

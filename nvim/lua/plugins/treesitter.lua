@@ -2,11 +2,13 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "master",
 		lazy = false,
 		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
+		main = "nvim-treesitter",
 		-- adding this due to treesitter configuring first
 		dependencies = {
+			"nvim-treesitter/nvim-treesitter-textobjects",
 			{
 				"LiadOz/nvim-dap-repl-highlights",
 				config = function()
@@ -66,7 +68,7 @@ return {
 			},
 		},
 		config = function(_, opts)
-			require("nvim-treesitter.configs").setup(opts)
+			require("nvim-treesitter").setup(opts)
 
 			-- language aliases for fenced code blocks
 			vim.treesitter.language.register("bash", "sh")

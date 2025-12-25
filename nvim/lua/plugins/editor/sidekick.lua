@@ -4,13 +4,32 @@
 return {
 	"folke/sidekick.nvim",
 	opts = {
-		-- add any options here
+		-- send picker selections to sidekick buffer
+		picker = {
+			actions = {
+				sidekick_send = function(...)
+					return require("sidekick.cli.picker.snacks").send(...)
+				end,
+			},
+			win = {
+				input = {
+					keys = {
+						["<a-a>"] = {
+							"sidekick_send",
+							mode = { "n", "i" },
+						},
+					},
+				},
+			},
+		},
 		cli = {
 			mux = {
 				backend = "tmux",
 				enabled = true,
 			},
 		},
+		-- disable nes since annoying
+		nes = { enabled = false },
 	},
 	keys = {
 		{
@@ -137,16 +156,16 @@ return {
 			mode = { "n", "x" },
 			desc = "Sidekick Select Prompt",
 		},
-		-- Example of a keybinding to open Claude directly
+		-- Example of a keybinding to open Codex directly
 		{
 			"<leader>ac",
 			function()
 				require("sidekick.cli").toggle({
-					name = "claude",
+					name = "codex",
 					focus = true,
 				})
 			end,
-			desc = "Sidekick Toggle Claude",
+			desc = "Sidekick Toggle Codex",
 		},
 	},
 }
