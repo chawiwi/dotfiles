@@ -16,6 +16,11 @@ return {
 
 				-- Make Visual mode stand out more
 				hl.Visual = { bg = "#445b9b" }
+
+				-- Keep TS module/namespace coloring aligned with the active colorscheme.
+				-- hl["@module"] = { link = "Type" }
+				-- hl["@namespace"] = { link = "Type" }
+				-- hl["@variable"] = { link = "Type" }
 			end,
 			styles = {
 				comments = { italic = false }, -- copilot ghost text will use italic, to diffrentiate it from comments

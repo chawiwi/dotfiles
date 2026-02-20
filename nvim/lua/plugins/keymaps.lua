@@ -767,7 +767,8 @@ return {
 		"esmuellert/vscode-diff.nvim",
 		keys = {
 			{ "<leader>gv", "<cmd>CodeDiff<cr>", desc = "Diff [v]iew" },
-			{ "<leader>gh", "<cmd>CodeDiff file % HEAD<cr>", desc = "File [h]istory (HEAD)" },
+			--TODO: integrate snacks picker into gh
+			{ "<leader>gh", "<cmd>CodeDiff file HEAD<cr>", desc = "File [h]istory (HEAD)" },
 			{ "<leader>gB", "<cmd>CodeDiff origin/HEAD HEAD<cr>", desc = "[B]ranch changes" },
 		},
 	},

@@ -277,12 +277,14 @@ bar {
 }
 
 # Making DP-0 as workspace 1
-workspace 1 output DP-0
-
-workspace 2 output HDMI-0
+workspace 1 output DP-4
+workspace 2 output DP-0
 
 for_window [class="firefox"] floating disable
 
+assign [class="firefox"] 1
+assign [class="firefox"] 2
+assign [class="steam"] 3
 # Send CS2 to a dedicated game workspace, make it borderless, floating & fullscreen
 set $wsgame "5:🎮"
 assign [class="^cs2$"] $wsgame
@@ -292,3 +294,4 @@ for_window [title="^Counter-Strike 2$"] floating enable, border pixel 0, fullscr
 # Optional: when you switch to the game workspace, use stacking so no split halves remain
 workspace $wsgame output primary
 # workspace_layout stacking
+

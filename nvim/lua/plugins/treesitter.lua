@@ -68,7 +68,7 @@ return {
 			},
 		},
 		config = function(_, opts)
-			require("nvim-treesitter").setup(opts)
+			require("nvim-treesitter.configs").setup(opts)
 
 			-- language aliases for fenced code blocks
 			vim.treesitter.language.register("bash", "sh")
