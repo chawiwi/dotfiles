@@ -39,6 +39,19 @@ return {
 		keys = function()
 			local Snacks = require("snacks")
 			local stdpath = vim.fn.stdpath
+			local function has_fd()
+				return vim.fn.executable("fd") == 1 or vim.fn.executable("fdfind") == 1
+			end
+			local function open_explorer()
+				if has_fd() then
+					return Snacks.explorer()
+				end
+				if not vim.g._snacks_fd_warned then
+					vim.g._snacks_fd_warned = true
+					vim.notify("fd/fdfind not found; using file picker fallback", vim.log.levels.WARN)
+				end
+				return Snacks.picker.files()
+			end
 
 			return {
 				-- Top pickers & explorer
@@ -79,9 +92,7 @@ return {
 				},
 				{
 					"<leader>e",
-					function()
-						Snacks.explorer()
-					end,
+					open_explorer,
 					desc = "File Explorer",
 				},
 
@@ -674,6 +685,9 @@ return {
 	---------------------------------------------------------------------------
 	{
 		"uhs-robert/sshfs.nvim",
+		cond = function()
+			return vim.fn.executable("sshfs") == 1 and vim.fn.executable("ssh") == 1
+		end,
 		keys = function()
 			return {
 				{ "<leader>rm", ":SSHConnect<CR>", desc = "Remote: Mount (Snacks picker)" }, -- mounts + picks host

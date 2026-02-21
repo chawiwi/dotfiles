@@ -50,11 +50,77 @@ return {
 			})
 		end
 
-		-- Helper: compute local mount path from sshfs.nvim’s base_dir + host label + remote root
-		local function sshfs_local_root(host_label, remote_root)
-			-- keep in sync with sshfs.lua mounts.base_dir
+		-- Normalize remote roots
+		-- - keeps "~" paths
+		-- - keeps Windows drive roots like "C:/work" or "C:\\work" (converts backslashes)
+		-- - adds leading slash for relative POSIX paths
+		-- - keeps "/" as-is
+		local function normalize_remote_root(path)
+			if not path or path == "" then
+				return "/"
+			end
+
+			-- normalize slashes
+			path = path:gsub("\\", "/")
+
+			-- sshfs on Windows hosts may expose "/C:/path" (strip leading slash before drive)
+			if path:match("^/%a:/") then
+				path = path:sub(2)
+			end
+
+			-- leave ~ paths intact
+			if path:sub(1, 1) == "~" then
+				return path
+			end
+
+			-- Windows drive letter paths: "C:/foo" or "C:"
+			if path:match("^%a:[/]?") then
+				return path
+			end
+
+			-- ensure POSIX-style paths start with "/"
+			if path:sub(1, 1) ~= "/" then
+				return "/" .. path
+			end
+
+			return path
+		end
+
+		local function strip_trailing_slash(path)
+			if not path or path == "/" then
+				return path or "/"
+			end
+			return path:gsub("/+$", "")
+		end
+
+		-- Helper: compute local root that matches a mount (works even when mounting subdirs like /test)
+		local function resolve_local_root(host_label, remote_root)
+			remote_root = normalize_remote_root(remote_root)
+
+			-- Try to read mount metadata from sshfs.nvim (preferred: handles /test-only mounts)
+			local ok_mp, mount_point = pcall(require, "sshfs.lib.mount_point")
+			if ok_mp then
+				for _, m in ipairs(mount_point.list_active()) do
+					if m.host == host_label then
+						local mount_remote = normalize_remote_root(m.remote_path)
+						mount_remote = strip_trailing_slash(mount_remote)
+						local normalized_remote = strip_trailing_slash(remote_root)
+						if normalized_remote:find(mount_remote, 1, true) == 1 then
+							if mount_remote == "/" then
+								return m.mount_path .. normalized_remote
+							end
+							local suffix = normalized_remote:sub(#mount_remote + 1)
+							if suffix == "" then
+								return m.mount_path
+							end
+							return m.mount_path .. suffix
+						end
+					end
+				end
+			end
+
+			-- Fallback: assume mount root is "/" and mirror remote_root under ~/.sshfs/<host>
 			local base = vim.fn.expand("~/.sshfs")
-			-- remote_root like "/test/t6i"
 			return base .. "/" .. host_label .. remote_root
 		end
 
@@ -67,14 +133,16 @@ return {
 
 			local host_label = args[1] or vim.fn.input("Host label (~/.sshfs/<label>): ")
 			local remote_root = args[2] or vim.fn.input("Remote root (e.g. /test/t6i): ", "/test/t6i")
+			remote_root = strip_trailing_slash(normalize_remote_root(remote_root))
 			local port = tonumber(args[3] or "5679")
 
-			local local_root = sshfs_local_root(host_label, remote_root)
+			local local_root = resolve_local_root(host_label, remote_root)
 			if vim.fn.isdirectory(local_root) == 0 then
 				vim.notify(
 					"Mount not found: " .. local_root .. "\nRun :SSHConnect and mount first.",
 					vim.log.levels.WARN
 				)
+				return
 			end
 
 			dap.run({
