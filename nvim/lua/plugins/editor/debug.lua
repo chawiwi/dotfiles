@@ -14,7 +14,6 @@ return {
 			opts = {
 				-- keep defaults; just auto open/close with sessions
 				winbar = { controls = { enabled = true } },
-				windows = { terminal = { start_hidden = false } }, -- default
 				auto_toggle = true, -- open/close with sessions
 			},
 		},

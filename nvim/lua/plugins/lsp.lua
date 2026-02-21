@@ -292,6 +292,14 @@ return {
 			{
 				"L3MON4D3/LuaSnip",
 				version = "2.*",
+				config = function()
+					-- Load both bundled and custom VSCode-style snippets.
+					local vscode_loader = require("luasnip.loaders.from_vscode")
+					vscode_loader.lazy_load()
+					-- Load custom snippets immediately so they are available for the current buffer.
+					local snippet_dir = vim.fn.stdpath("config") .. "/snippets"
+					vscode_loader.load({ paths = { snippet_dir } })
+				end,
 				build = (function()
 					-- Build Step is needed for regex support in snippets.
 					-- This step is not supported in many windows environments.
@@ -307,9 +315,6 @@ return {
 					--    https://github.com/rafamariz/friendly-snippets
 					{
 						"rafamadriz/friendly-snippets",
-						config = function()
-							require("luasnip.loaders.from_vscode").lazy_load()
-						end,
 					},
 				},
 				opts = {},

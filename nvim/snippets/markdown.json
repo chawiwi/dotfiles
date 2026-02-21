@@ -1,0 +1,35 @@
+{
+  "Code block": {
+    "prefix": "code",
+    "body": [
+      "```$1",
+      "$0",
+      "```"
+    ],
+    "description": "Fenced code block with language"
+  },
+  "Link": {
+    "prefix": "link",
+    "body": [
+      "[${1:text}](${2:url})"
+    ],
+    "description": "Markdown link"
+  },
+  "Task item": {
+    "prefix": "todo",
+    "body": [
+      "- [ ] ${0}"
+    ],
+    "description": "Checklist item"
+  },
+  "Table (2x2)": {
+    "prefix": "table2",
+    "body": [
+      "| ${1:Header 1} | ${2:Header 2} |",
+      "| --- | --- |",
+      "| ${3:Cell 1} | ${4:Cell 2} |",
+      "| ${5:Cell 3} | ${6:Cell 4} |"
+    ],
+    "description": "Simple 2x2 table"
+  }
+}

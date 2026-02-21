@@ -1,0 +1,64 @@
+{
+  "Common Imports": {
+    "prefix": "impall",
+    "body": [
+      "import os",
+      "import sys",
+      "import re",
+      "import time",
+      "import logging",
+      "import argparse",
+      "from pathlib import Path",
+      "from typing import List, Dict, Tuple, Union",
+      "from local_utils.log import Logger",
+      "from local_utils.net import normalize_mac, find_ip",
+      "from local_utils.process import exec_command",
+      "from local_utils.ama_service import AMAConfigGet",
+      "from local_utils.user_input import get_sn_list",
+      "from local_utils.ssh import connect_ssh, run_ssh_cmd",
+      "",
+      "def main():",
+      "    sns = get_sn_list()",
+      "    client = AMAConfigGet()",
+      "    $0",
+      "    pass",
+      "",
+      "if __name__ == '__main__':",
+      "    main()"
+    ],
+    "description": "Common imports"
+  },
+  "Docstring": {
+    "prefix": "docstring",
+    "body": [
+      "    \"\"\"$1",
+      "",
+      "    Args:",
+      "        ${2:arg_name} (${3:type}): ${4:description}",
+      "",
+      "    Returns:",
+      "        ${5:type}: ${6:description}",
+      "",
+      "    Raises:",
+      "        ${7:ExceptionType}: ${8:description}",
+      "    \"\"\"",
+      "",
+      "    $0"
+    ],
+    "description": "Write docstring for the function"
+  },
+  "Parse args": {
+    "prefix": "argparse",
+    "body": [
+      "def parse_args():",
+      "    parser = argparse.ArgumentParser(description='$3')",
+      "    parser.add_argument($2)",
+      "    parser.add_argument($1)",
+      "    args = parser.parse_args()",
+      "    return args",
+      "",
+      "$0"
+    ],
+    "description": "Set namespace args for script"
+  }
+}

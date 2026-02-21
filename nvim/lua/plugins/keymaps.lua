@@ -26,9 +26,6 @@ vim.keymap.set("n", "<localleader>nn", function()
 	vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
 end, { desc = "Notebook: New cell below" })
 
--- Doge docstring gen
-vim.keymap.set("n", "<Leader>dd", "<Plug>(doge-generate)")
-
 ---------------------------------------------------------------------------
 -- plugin keymaps
 ---------------------------------------------------------------------------

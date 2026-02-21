@@ -429,3 +429,6 @@ alias cx="codex"
 alias cxr="codex resume"
 alias lg='lazygit'
 alias wz='wezterm'
+
+# Created by `pipx` on 2026-02-21 18:02:16
+export PATH="$PATH:/home/kaisawa/.local/bin"

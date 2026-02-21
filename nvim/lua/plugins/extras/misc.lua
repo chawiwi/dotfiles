@@ -69,8 +69,4 @@ return {
 		--pydoc browser
 		"girishji/pythondoc.vim",
 	},
-	{
-		--docstring gen
-		"kkoomen/vim-doge",
-	},
 }

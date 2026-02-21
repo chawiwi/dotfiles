@@ -1,0 +1,32 @@
+{
+  "Bash header": {
+    "prefix": "shebang",
+    "body": [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      "",
+      "$0"
+    ],
+    "description": "Bash shebang and strict mode"
+  },
+  "For loop": {
+    "prefix": "forin",
+    "body": [
+      "for ${1:item} in \"${2:items[@]}\"; do",
+      "  ${0}",
+      "done"
+    ],
+    "description": "Loop over an array"
+  },
+  "Case statement": {
+    "prefix": "case",
+    "body": [
+      "case \"${1:var}\" in",
+      "  ${2:pattern})",
+      "    ${0}",
+      "    ;;",
+      "esac"
+    ],
+    "description": "Simple case statement"
+  }
+}
