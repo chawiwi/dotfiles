@@ -93,6 +93,41 @@ return {
 			return path:gsub("/+$", "")
 		end
 
+		local function detect_mount_from_current_buffer()
+			local ok_mp, mount_point = pcall(require, "sshfs.lib.mount_point")
+			if not ok_mp then
+				return nil
+			end
+
+			local buf_name = vim.api.nvim_buf_get_name(0)
+			if not buf_name or buf_name == "" then
+				return nil
+			end
+
+			local best = nil
+			for _, m in ipairs(mount_point.list_active()) do
+				local mount_path = m.mount_path
+				if type(mount_path) == "string" and mount_path ~= "" then
+					local prefix = mount_path .. "/"
+					if buf_name == mount_path or buf_name:find(prefix, 1, true) == 1 then
+						if not best or #mount_path > #best.mount_path then
+							best = m
+						end
+					end
+				end
+			end
+
+			if not best then
+				return nil
+			end
+
+			return {
+				host_label = best.host,
+				remote_root = strip_trailing_slash(normalize_remote_root(best.remote_path)),
+				local_root = best.mount_path,
+			}
+		end
+
 		-- Helper: compute local root that matches a mount (works even when mounting subdirs like /test)
 		local function resolve_local_root(host_label, remote_root)
 			remote_root = normalize_remote_root(remote_root)
@@ -131,18 +166,46 @@ return {
 				table.insert(args, w)
 			end
 
-			local host_label = args[1] or vim.fn.input("Host label (~/.sshfs/<label>): ")
-			local remote_root = args[2] or vim.fn.input("Remote root (e.g. /test/t6i): ", "/test/t6i")
+			local detected = detect_mount_from_current_buffer()
+
+			local host_label = args[1]
+			if not host_label or host_label == "" then
+				host_label = (detected and detected.host_label) or vim.fn.input("Host label (~/.sshfs/<label>): ")
+			end
+
+			local remote_root = args[2]
+			if not remote_root or remote_root == "" then
+				if detected and detected.remote_root then
+					remote_root = detected.remote_root
+				else
+					remote_root = vim.fn.input("Remote root (e.g. /test/t6i): ", "/test/t6i")
+				end
+			end
+
 			remote_root = strip_trailing_slash(normalize_remote_root(remote_root))
 			local port = tonumber(args[3] or "5679")
 
-			local local_root = resolve_local_root(host_label, remote_root)
+			local local_root
+			local used_auto_detect = false
+			if detected and detected.host_label == host_label and detected.remote_root == remote_root then
+				local_root = detected.local_root
+				used_auto_detect = true
+			else
+				local_root = resolve_local_root(host_label, remote_root)
+			end
 			if vim.fn.isdirectory(local_root) == 0 then
 				vim.notify(
 					"Mount not found: " .. local_root .. "\nRun :SSHConnect and mount first.",
 					vim.log.levels.WARN
 				)
 				return
+			end
+
+			if used_auto_detect then
+				vim.notify(
+					string.format("Auto-detected remote debug root: %s (%s)", host_label, remote_root),
+					vim.log.levels.INFO
+				)
 			end
 
 			dap.run({
@@ -152,6 +215,8 @@ return {
 				connect = { host = "127.0.0.1", port = port },
 				pathMappings = { { localRoot = local_root, remoteRoot = remote_root } },
 				justMyCode = false,
+				-- Follow child Python processes that may be spawned after prompts/wrappers.
+				subProcess = true,
 			})
 		end, { nargs = "*" })
 

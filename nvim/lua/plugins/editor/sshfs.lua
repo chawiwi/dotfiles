@@ -46,6 +46,86 @@ return {
 		local ssh = require("sshfs.lib.ssh")
 		local original_build_cmd = ssh.build_command_string
 
+		-- Mirror remote paths under the host mount root:
+		--   /           -> ~/.sshfs/<host>
+		--   /home/kevin -> ~/.sshfs/<host>/home/kevin
+		--   /test       -> ~/.sshfs/<host>/test
+		-- sshfs.nvim currently flattens custom paths into "<host>_<path>".
+		do
+			local function mirrored_mount_dir(host_name, remote_path_suffix)
+				local cfg = Config.get()
+				local base_dir = (cfg.mounts and cfg.mounts.base_dir) or (vim.fn.expand("$HOME") .. "/.sshfs")
+				local host_root = base_dir .. "/" .. host_name
+				local path = tostring(remote_path_suffix or ""):gsub("\\", "/")
+
+				if path == "" or path == "/" then
+					return host_root
+				end
+
+				-- For non-absolute paths like "~" keep a safe flat suffix.
+				if path:sub(1, 1) ~= "/" then
+					local sanitized = path
+						:gsub("^%./", "")
+						:gsub("[/]+", "_")
+						:gsub("[^%w%._%-%~]", "_")
+						:gsub("^_+", "")
+						:gsub("_+$", "")
+					if sanitized == "" then
+						return host_root
+					end
+					return host_root .. "_" .. sanitized
+				end
+
+				local parts = {}
+				for part in path:gmatch("[^/]+") do
+					-- Skip traversal segments to avoid escaping the host root.
+					if part ~= "" and part ~= "." and part ~= ".." then
+						table.insert(parts, part)
+					end
+				end
+
+				if #parts == 0 then
+					return host_root
+				end
+
+				return host_root .. "/" .. table.concat(parts, "/")
+			end
+
+			local ok_session, Session = pcall(require, "sshfs.session")
+			if ok_session and type(Session.connect) == "function" and debug and debug.getupvalue and debug.setupvalue then
+				for i = 1, 20 do
+					local upvalue_name = debug.getupvalue(Session.connect, i)
+					if not upvalue_name then
+						break
+					end
+					if upvalue_name == "get_unique_mount_dir" then
+						debug.setupvalue(Session.connect, i, mirrored_mount_dir)
+						break
+					end
+				end
+			end
+
+			-- sshfs.nvim infers `host` from the local mount path suffix. With nested mount
+			-- dirs that becomes "Q4/home/kevin"; normalize it back to just "Q4".
+			local ok_mount_point, MountPoint = pcall(require, "sshfs.lib.mount_point")
+			if ok_mount_point and type(MountPoint.list_active) == "function" and not MountPoint._host_name_normalized_for_nested_mounts then
+				local original_list_active = MountPoint.list_active
+				MountPoint.list_active = function(...)
+					local mounts = original_list_active(...)
+					for _, m in ipairs(mounts) do
+						if type(m.host) == "string" then
+							local normalized = m.host:match("^[^/]+")
+							if normalized and normalized ~= "" then
+								m.host = normalized
+							end
+						end
+					end
+					return mounts
+				end
+				MountPoint._host_name_normalized_for_nested_mounts = true
+			end
+		end
+
 		-- Reuse the ControlMaster socket (needed for password-only hosts) instead of reauthing
 		local function socket_opts()
 			return Config.get_control_master_options()
