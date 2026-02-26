@@ -3,15 +3,50 @@ return {
 		"ryan-ressmeyer/quench.nvim",
 		ft = { "python" },
 		build = ":UpdateRemotePlugins",
+		init = function()
+			local function revert_quench_frontend_css_for_lazy()
+				local data = vim.fn.stdpath("data")
+				local root = data .. "/lazy/quench.nvim"
+				local index = root .. "/rplugin/python3/quench/frontend/index.html"
+				if vim.fn.filereadable(index) ~= 1 or vim.fn.executable("git") ~= 1 then
+					return
+				end
+				local html = table.concat(vim.fn.readfile(index), "\n")
+				if not html:find("quench%-user%-style") then
+					return
+				end
+				vim.fn.system({
+					"git",
+					"-C",
+					root,
+					"checkout",
+					"--",
+					"rplugin/python3/quench/frontend/index.html",
+				})
+			end
+
+			local group = vim.api.nvim_create_augroup("quench_frontend_css_patch_lazy_pre", { clear = true })
+			vim.api.nvim_create_autocmd("User", {
+				group = group,
+				pattern = { "LazySyncPre", "LazyUpdatePre", "LazyInstallPre", "LazyCheckPre" },
+				callback = revert_quench_frontend_css_for_lazy,
+			})
+		end,
 		config = function()
 			vim.g.quench_nvim_web_server_host = "127.0.0.1"
 			vim.g.quench_nvim_web_server_port = 8765
 			vim.g.quench_nvim_autostart_server = true
 
 			-- Darken HTML outputs (tables/iframes) in Quench frontend.
-			local function patch_quench_frontend_css()
+			local function quench_frontend_paths()
 				local data = vim.fn.stdpath("data")
-				local index = data .. "/lazy/quench.nvim/rplugin/python3/quench/frontend/index.html"
+				local root = data .. "/lazy/quench.nvim"
+				local index = root .. "/rplugin/python3/quench/frontend/index.html"
+				return root, index
+			end
+
+			local function patch_quench_frontend_css()
+				local _, index = quench_frontend_paths()
 				if vim.fn.filereadable(index) ~= 1 then
 					return
 				end
@@ -54,6 +89,43 @@ return {
 					vim.fn.writefile(vim.split(replaced, "\n", { plain = true }), index)
 				end
 			end
+
+			local function revert_quench_frontend_css()
+				local root, index = quench_frontend_paths()
+				if vim.fn.filereadable(index) ~= 1 or vim.fn.executable("git") ~= 1 then
+					return
+				end
+				local html = table.concat(vim.fn.readfile(index), "\n")
+				if not html:find("quench%-user%-style") then
+					return
+				end
+				vim.fn.system({
+					"git",
+					"-C",
+					root,
+					"checkout",
+					"--",
+					"rplugin/python3/quench/frontend/index.html",
+				})
+			end
+
+			local group = vim.api.nvim_create_augroup("quench_frontend_css_patch", { clear = true })
+			vim.api.nvim_create_autocmd("User", {
+				group = group,
+				pattern = { "LazySyncPre", "LazyUpdatePre", "LazyInstallPre", "LazyCheckPre" },
+				callback = revert_quench_frontend_css,
+			})
+			vim.api.nvim_create_autocmd("User", {
+				group = group,
+				pattern = { "LazySync", "LazyUpdate", "LazyInstall", "LazyCheck" },
+				callback = function()
+					vim.schedule(patch_quench_frontend_css)
+				end,
+			})
+			vim.api.nvim_create_autocmd("VimLeavePre", {
+				group = group,
+				callback = revert_quench_frontend_css,
+			})
 
 			patch_quench_frontend_css()
 
