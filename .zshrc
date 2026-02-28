@@ -108,14 +108,25 @@ else
   _PREVIEW_RG='awk "NR>={2} && NR<{2}+200 {print}" {1}'
 fi
 
-# Catppuccin Mocha for bat/cat when available.
+# Catppuccin Mocha for bat/batcat; keep core `cat` unaliased.
 if command -v bat >/dev/null 2>&1; then
   export BAT_THEME="Catppuccin Mocha"
-  alias cat="bat --style=plain --paging=never --theme=\"Catppuccin Mocha\""
+  alias bcat='bat --style=plain --paging=never --theme="Catppuccin Mocha"'
 elif command -v batcat >/dev/null 2>&1; then
   export BAT_THEME="Catppuccin Mocha"
-  alias cat="batcat --style=plain --paging=never --theme=\"Catppuccin Mocha\""
+  alias bcat='batcat --style=plain --paging=never --theme="Catppuccin Mocha"'
 fi
+unalias cat 2>/dev/null
+
+# zsh-color-logging loads asynchronously and can re-alias cat -> ccat.
+# Keep `cat` as the core utility in interactive shells.
+if [[ -z "${DOTFILES_PLAIN_CAT_HOOK:-}" ]]; then
+  DOTFILES_PLAIN_CAT_HOOK=1
+  autoload -Uz add-zsh-hook
+  _dotfiles_keep_plain_cat() { unalias cat 2>/dev/null }
+  add-zsh-hook precmd _dotfiles_keep_plain_cat
+fi
+_dotfiles_keep_plain_cat
 
 # less + lesspipe with Catppuccin-friendly colors.
 if command -v lesspipe.sh >/dev/null 2>&1; then
@@ -425,6 +436,7 @@ alias pc='cd ~/Pictures'
 alias wf='cd /home/kaisawa/Desktop/Docs/Work'
 alias gf='cd /home/kaisawa/Desktop/Docs/git_files'
 alias icat="kitten icat"
+alias kd="kitten diff"
 alias cx="codex"
 alias cxr="codex resume"
 alias lg='lazygit'
