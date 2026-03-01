@@ -542,6 +542,81 @@ return {
 		},
 	},
 	---------------------------------------------------------------------------
+	-- neotest keymaps
+	---------------------------------------------------------------------------
+	{
+		"nvim-neotest/neotest",
+		keys = function()
+			local neotest = require("neotest")
+
+			return {
+				{
+					"<leader>tn",
+					function()
+						neotest.run.run()
+					end,
+					desc = "Test: Run nearest",
+				},
+				{
+					"<leader>tF",
+					function()
+						neotest.run.run(vim.fn.expand("%"))
+					end,
+					desc = "Test: Run file",
+				},
+				{
+					"<leader>ta",
+					function()
+						neotest.run.run(vim.fn.getcwd())
+					end,
+					desc = "Test: Run all (cwd)",
+				},
+				{
+					"<leader>tl",
+					function()
+						neotest.run.run_last()
+					end,
+					desc = "Test: Run last",
+				},
+				{
+					"<leader>td",
+					function()
+						neotest.run.run({ strategy = "dap" })
+					end,
+					desc = "Test: Debug nearest",
+				},
+				{
+					"<leader>tS",
+					function()
+						neotest.run.stop()
+					end,
+					desc = "Test: Stop",
+				},
+				{
+					"<leader>ts",
+					function()
+						neotest.summary.toggle()
+					end,
+					desc = "Test: Toggle summary",
+				},
+				{
+					"<leader>to",
+					function()
+						neotest.output.open({ enter = true, auto_close = true })
+					end,
+					desc = "Test: Show output",
+				},
+				{
+					"<leader>tO",
+					function()
+						neotest.output_panel.toggle()
+					end,
+					desc = "Test: Toggle output panel",
+				},
+			}
+		end,
+	},
+	---------------------------------------------------------------------------
 	-- debug keymaps
 	---------------------------------------------------------------------------
 	{
