@@ -442,5 +442,41 @@ alias cxr="codex resume"
 alias lg='lazygit'
 alias wz='wezterm'
 
+# Force `uv` to prefer a local project interpreter by walking up from $PWD.
+_uv_find_python_upwards() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -x "$dir/.venv/bin/python" ]]; then
+      printf '%s\n' "$dir/.venv/bin/python"
+      return 0
+    fi
+    dir="${dir:h}"
+  done
+  return 1
+}
+
+uv() {
+  local arg
+  local python_path
+
+  # Respect explicit user choice from env or CLI flags.
+  if [[ -n "${UV_PYTHON:-}" ]]; then
+    command uv "$@"
+    return $?
+  fi
+  for arg in "$@"; do
+    if [[ "$arg" == "--python" || "$arg" == "--python="* || "$arg" == "-p" ]]; then
+      command uv "$@"
+      return $?
+    fi
+  done
+
+  python_path="$(_uv_find_python_upwards)" || {
+    command uv "$@"
+    return $?
+  }
+  UV_PYTHON="$python_path" command uv "$@"
+}
+
 # Created by `pipx` on 2026-02-21 18:02:16
 export PATH="$PATH:/home/kaisawa/.local/bin"

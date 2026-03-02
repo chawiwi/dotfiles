@@ -31,19 +31,19 @@
   "Docstring": {
     "prefix": "docstring",
     "body": [
-      "    \"\"\"$1",
+      "\"\"\"$1",
       "",
-      "    Args:",
-      "        ${2:arg_name} (${3:type}): ${4:description}",
+      "Args:",
+      "    ${2:arg_name} (${3:type}): ${4:description}",
       "",
-      "    Returns:",
-      "        ${5:type}: ${6:description}",
+      "Returns:",
+      "    ${5:type}: ${6:description}",
       "",
-      "    Raises:",
-      "        ${7:ExceptionType}: ${8:description}",
-      "    \"\"\"",
+      "Raises:",
+      "    ${7:ExceptionType}: ${8:description}",
+      "\"\"\"",
       "",
-      "    $0"
+      "$0"
     ],
     "description": "Write docstring for the function"
   },
