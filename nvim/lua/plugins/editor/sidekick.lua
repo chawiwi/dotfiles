@@ -28,6 +28,11 @@ return {
 				enabled = true,
 			},
 		},
+		copilot = {
+			status = {
+				level = vim.log.levels.OFF,
+			},
+		},
 		-- disable nes since annoying
 		nes = { enabled = false },
 	},
