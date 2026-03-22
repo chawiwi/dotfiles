@@ -326,10 +326,15 @@ return {
 		opts = {
 			-- Enable blink inside DAP buffers (REPL & panes are 'prompt' buftype)
 			enabled = function()
+				if vim.api.nvim_buf_get_name(0) == "grip://query" then
+					return false
+				end
+
 				local bt = vim.bo.buftype
 				if bt ~= "prompt" then
 					return true
 				end
+
 				local ft = vim.bo.filetype
 				return ft == "dap-repl" or ft == "dapui_watches" or ft == "dapui_hover" or ft == "dap-view" -- if you open dap-view panes with prompt buffers
 			end,

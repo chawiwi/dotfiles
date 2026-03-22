@@ -145,6 +145,7 @@ require("lazy").setup({
 		{ import = "plugins.ui" },
 		{ import = "plugins.editor" },
 		{ import = "plugins.extras" },
+		{ import = "plugins.db" },
 		require("plugins.keymaps"),
 	},
 	-- install = { colorscheme = { "habamax" } },
