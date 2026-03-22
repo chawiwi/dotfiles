@@ -13,8 +13,20 @@ return {
 		end,
 		config = function()
 			local peek = require("peek")
+			local uv = vim.uv or vim.loop
+			local uname = uv.os_uname()
+			local release = (uname.release or ""):lower()
+			local is_wsl = vim.fn.has("wsl") == 1 or release:find("microsoft", 1, true) ~= nil
+			local app = "browser"
+
+			if is_wsl and vim.fn.executable("wslview") == 1 then
+				app = "wslview"
+			elseif vim.fn.executable("firefox") == 1 then
+				app = { "firefox", "--new-window" }
+			end
+
 			peek.setup({
-				app = (vim.fn.executable("firefox") == 1) and { "firefox", "--new-window" } or "browser",
+				app = app,
 			})
 
 			local function ensure_peek_bundle()
