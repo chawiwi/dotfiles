@@ -11,4 +11,5 @@ return {
 	config = function()
 		require("kitty-scrollback").setup()
 	end,
+	tag = "v7.0.0",
 }
