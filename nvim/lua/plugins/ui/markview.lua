@@ -4,7 +4,7 @@ return {
 	priority = 49,
 	dependencies = { "nvim-treesitter/nvim-treesitter" },
 
-	opts = {
+	opts = require("plugins.ui.markview_mermaid").apply({
 		presets = { "all" }, -- keep if you like Markview's default UX bits
 		markdown = {
 			-- no require("markview.presets") to avoid version issues
@@ -19,7 +19,7 @@ return {
 				info_hl = "MarkviewCodeInfo",
 			},
 		},
-	},
+	}),
 
 	config = function(_, opts)
 		require("markview").setup(opts)

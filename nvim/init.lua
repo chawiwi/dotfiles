@@ -142,7 +142,7 @@ require("lazy").setup({
 		require("plugins.treesitter"),
 		require("plugins.lsp"),
 		require("plugins.snacks"),
-		{ import = "plugins.ui" },
+		require("plugins.ui"),
 		{ import = "plugins.editor" },
 		{ import = "plugins.extras" },
 		{ import = "plugins.db" },
