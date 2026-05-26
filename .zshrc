@@ -478,5 +478,9 @@ uv() {
   UV_PYTHON="$python_path" command uv "$@"
 }
 
+pob() {
+    flatpak run community.pathofbuilding.PathOfBuilding poe2 > /dev/null 2>&1 &
+    disown
+}
 # Created by `pipx` on 2026-02-21 18:02:16
 export PATH="$PATH:/home/kaisawa/.local/bin"
