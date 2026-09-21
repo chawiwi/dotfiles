@@ -2,25 +2,9 @@
   "name": "custom-snippets",
   "contributes": {
     "snippets": [
-      {
-        "language": [
-          "python"
-        ],
-        "path": "./python.json"
-      },
-      {
-        "language": [
-          "sh",
-          "bash"
-        ],
-        "path": "./sh.json"
-      },
-      {
-        "language": [
-          "markdown"
-        ],
-        "path": "./markdown.json"
-      }
+      { "language": ["python"], "path": "./python.json" },
+      { "language": ["sh", "bash"], "path": "./sh.json" },
+      { "language": ["markdown"], "path": "./markdown.json" }
     ]
   }
 }

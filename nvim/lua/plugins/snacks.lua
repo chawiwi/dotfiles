@@ -1,58 +1,80 @@
-return {
-	"folke/snacks.nvim",
-	priority = 1000,
-	lazy = false,
-	opts = {
-		bigfile = { enabled = true },
-		dashboard = { enabled = true },
-		explorer = { enabled = true },
-		image = {
-			enabled = true,
-			resolve = function(path, src)
-				local ok, api = pcall(require, "obsidian.api")
-				if ok and path and api.path_is_note(path) then
-					return api.resolve_attachment_path(src)
-				end
-			end,
+vim.pack.add({ { src = "https://github.com/folke/snacks.nvim" } })
+
+local mini = require("plugins.mini")
+
+local open_packages = function()
+	-- plugin-view expects every package to have a string `spec.version`. vim.pack
+	-- instead leaves it unset for floating packages and accepts version objects.
+	-- Present the installed commit to the viewer, without changing the real specs.
+	local pack_get = vim.pack.get
+	vim.pack.get = function(...)
+		local packages = pack_get(...)
+		for index, package in ipairs(packages) do
+			package = vim.deepcopy(package)
+			package.spec.version = package.rev:sub(1, 10)
+			packages[index] = package
+		end
+		return packages
+	end
+
+	local ok, err = pcall(require("plugin-view").open)
+	vim.pack.get = pack_get
+	if not ok then
+		error(err)
+	end
+end
+
+local dashboard_package_stats = function()
+	return {
+		align = "center",
+		text = {
+			{ "⚡ Neovim loaded ", hl = "footer" },
+			{ #vim.pack.get() .. " packages", hl = "special" },
 		},
-		indent = { enabled = true },
-		input = { enabled = true },
-		notifier = { enabled = true, timeout = 3000 },
-		picker = { enabled = true },
-		quickfile = { enabled = true },
-		scope = { enabled = true },
-		scroll = { enabled = true },
-		statuscolumn = { enabled = true },
-		words = { enabled = true },
-		styles = { notification = {} },
+	}
+end
+
+require("snacks").setup({
+	dashboard = {
+		enabled = true,
+		preset = {
+			keys = {
+				{
+					icon = " ",
+					key = "f",
+					desc = "Files .",
+					action = function()
+						mini.pick_files(vim.fn.getcwd())
+					end,
+				},
+				{
+					icon = "󰊢 ",
+					key = "g",
+					desc = "Git files",
+					action = function()
+						mini.pick_files("~/git_files")
+					end,
+				},
+				{
+					icon = " ",
+					key = "c",
+					desc = "Config files",
+					action = function()
+						mini.pick_files(vim.fn.stdpath("config"))
+					end,
+				},
+				{ icon = " ", key = "r", desc = "Recent files", action = mini.pick_recent_files },
+				{ icon = " ", key = "n", desc = "New buffer", action = "enew" },
+				{ icon = " ", key = "p", desc = "Manage packages", action = open_packages },
+			},
+		},
+		sections = {
+			{ section = "header" },
+			{ section = "keys", gap = 1, padding = 1 },
+			dashboard_package_stats,
+		},
 	},
-	init = function()
-		vim.api.nvim_create_autocmd("User", {
-			pattern = "VeryLazy",
-			callback = function()
-				_G.dd = function(...)
-					Snacks.debug.inspect(...)
-				end
-				_G.bt = function()
-					Snacks.debug.backtrace()
-				end
-				vim.print = _G.dd
-				Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
-				Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
-				Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
-				Snacks.toggle.diagnostics():map("<leader>ud")
-				Snacks.toggle.line_number():map("<leader>ul")
-				Snacks.toggle
-					.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-					:map("<leader>uc")
-				Snacks.toggle.treesitter():map("<leader>uT")
-				Snacks.toggle
-					.option("background", { off = "light", on = "dark", name = "Dark Background" })
-					:map("<leader>ub")
-				Snacks.toggle.inlay_hints():map("<leader>uh")
-				Snacks.toggle.indent():map("<leader>ug")
-				Snacks.toggle.dim():map("<leader>uD")
-			end,
-		})
-	end,
-}
+})
+
+vim.api.nvim_create_user_command("PackView", open_packages, { desc = "Manage installed packages" })
+vim.keymap.set("n", "<leader>p", open_packages, { desc = "Manage packages" })

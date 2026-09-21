@@ -1,0 +1,9 @@
+vim.pack.add({
+	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+})
+
+require("render-markdown").setup({
+	completions = { blink = { enabled = true } },
+})
+
+vim.keymap.set("n", "<leader>tm", "<CMD>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown rendering" })

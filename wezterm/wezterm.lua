@@ -44,5 +44,10 @@ config.window_frame = {
 }
 config.enable_scroll_bar = true
 config.window_background_opacity = 0.9
+config.default_prog = { 'wsl' }
+config.launch_menu = {
+	{label = "Powershell", args = {"powershell.exe", "-NoLogo"}},
+	{label = "CMD", args = {"cmd.exe"}},
+}
 
 return config
