@@ -6,5 +6,5 @@ vim.pack.add({
 
 -- require("kanagawa").load("wave")
 -- require("catppuccin").load("mocha")
-require("tokyonight").setup({ style = "storm" })
+require("tokyonight").setup({ style = "night" })
 vim.cmd.colorscheme("tokyonight")
