@@ -32,17 +32,27 @@ local function active_mount()
 		return nil
 	end
 
-	local file = vim.api.nvim_buf_get_name(0)
+	local mounts = mount_point.list_active()
+	local paths = {
+		vim.api.nvim_buf_get_name(0),
+		vim.fn.getcwd(),
+		vim.fn.getcwd(-1, 0),
+	}
 	local best
-	for _, mount in ipairs(mount_point.list_active()) do
-		local path = mount.mount_path
-		if type(path) == "string" and (file == path or vim.startswith(file, path .. "/")) then
-			if not best or #path > #best.mount_path then
-				best = mount
+	for _, candidate in ipairs(paths) do
+		for _, mount in ipairs(mounts) do
+			local path = mount.mount_path
+			if type(path) == "string" and candidate ~= "" and (candidate == path or vim.startswith(candidate, path .. "/")) then
+				if not best or #path > #best.mount_path then
+					best = mount
+				end
 			end
 		end
+		if best then
+			return best
+		end
 	end
-	return best
+	return #mounts == 1 and mounts[1] or nil
 end
 
 vim.api.nvim_create_user_command("DapAttachRemoteRoot", function(command)

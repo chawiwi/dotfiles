@@ -21,6 +21,9 @@ vim.opt.tabstop = 4
 vim.opt.softtabstop = -1
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
+vim.opt.autoindent = true
+vim.opt.copyindent = true
+vim.opt.preserveindent = true
 
 -- YAML's grammar prohibits tabs for indentation, so it is the explicit
 -- exception to the tab-first default.
@@ -32,6 +35,74 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt_local.shiftwidth = 2
 		vim.opt_local.expandtab = true
 	end,
+})
+
+local function infer_space_width(indents)
+	local current = vim.bo.shiftwidth > 0 and vim.bo.shiftwidth or vim.bo.tabstop
+	local best_width = current
+	local best_score = -1
+	local preference = { [current] = 3, [4] = 2, [2] = 1, [8] = 0 }
+
+	for _, width in ipairs({ 2, 4, 8 }) do
+		local score = 0
+		for _, indent in ipairs(indents) do
+			if indent >= width and indent % width == 0 then
+				score = score + 1
+			end
+		end
+
+		local best_preference = preference[best_width] or -1
+		local width_preference = preference[width] or -1
+		if score > best_score or (score == best_score and width_preference > best_preference) then
+			best_width = width
+			best_score = score
+		end
+	end
+
+	return best_width
+end
+
+local function match_existing_indent()
+	local bufnr = vim.api.nvim_get_current_buf()
+	if vim.bo[bufnr].buftype ~= "" then
+		return
+	end
+
+	local lines = vim.api.nvim_buf_get_lines(bufnr, 0, math.min(vim.api.nvim_buf_line_count(bufnr), 256), false)
+	local tab_lines = 0
+	local space_indents = {}
+
+	for _, line in ipairs(lines) do
+		local indent = line:match("^([ \t]+)%S")
+		if indent then
+			if indent:find("\t", 1, true) then
+				tab_lines = tab_lines + 1
+			elseif #indent > 1 then
+				space_indents[#space_indents + 1] = #indent
+			end
+		end
+	end
+
+	if #space_indents == 0 and tab_lines == 0 then
+		return
+	end
+
+	if #space_indents >= tab_lines then
+		local width = infer_space_width(space_indents)
+		vim.bo[bufnr].expandtab = true
+		vim.bo[bufnr].shiftwidth = width
+		vim.bo[bufnr].softtabstop = width
+	else
+		vim.bo[bufnr].expandtab = false
+		vim.bo[bufnr].shiftwidth = vim.bo[bufnr].tabstop
+		vim.bo[bufnr].softtabstop = -1
+	end
+end
+
+vim.api.nvim_create_autocmd({ "BufReadPost", "FileType" }, {
+	desc = "Match indentation settings to existing buffer indentation",
+	group = vim.api.nvim_create_augroup("config-match-existing-indent", { clear = true }),
+	callback = match_existing_indent,
 })
 
 vim.schedule(function()

@@ -1,5 +1,5 @@
 vim.pack.add({
-	{ src = "https://github.com/barrettruth/canola.nvim" },
+	{ src = "https://forge.barrettruth.com/barrettruth/canola.nvim" },
 })
 
 require("oil").setup()

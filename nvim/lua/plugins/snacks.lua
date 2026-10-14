@@ -64,7 +64,7 @@ require("snacks").setup({
 					end,
 				},
 				{ icon = " ", key = "r", desc = "Recent files", action = mini.pick_recent_files },
-				{ icon = " ", key = "n", desc = "New buffer", action = "enew" },
+				{ icon = " ", key = "n", desc = "New buffer", action = ":enew" },
 				{ icon = " ", key = "p", desc = "Manage packages", action = open_packages },
 			},
 		},
